@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description:
+  Lambda Create
+
+# ------------------------------------------------------------#
+#  InputParameters
+# ------------------------------------------------------------#
+Parameters:
+  FunctionName:
+    Type: String
+  Description:
+    Type: String
+  Handler:
+    Type: String
+  MemorySize:
+    Type: String
+  Runtime:
+    Type: String
+  Timeout:
+    Type: String
+  TagsName:
+    Type: String
+
+# ------------------------------------------------------------#
+#  Resources
+# ------------------------------------------------------------#
+Resources:
+# ------------------------------------------------------------#
+#  Lambda
+# ------------------------------------------------------------#
+  Lambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Description: !Ref Description
+      FunctionName: !Ref FunctionName
+      Handler: !Ref Handler
+      MemorySize: !Ref MemorySize
+      Runtime: !Ref Runtime
+      Timeout: !Ref Timeout
+      Role: !GetAtt LambdaRole.Arn
+      Tags: 
+        - Key: "User"
+          Value: !Ref TagsName
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${FunctionName}-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action: "sts:AssumeRole"
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: !Sub "${FunctionName}-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "logs:CreateLogGroup"
+                Resource: !Sub "arn:${AWS::Partition}:logs:*:*:*"
+
+
+# ------------------------------------------------------------#
+# Output Parameters
+#------------------------------------------------------------#          
+Outputs:
+  LambdaArn:
+    Value: !GetAtt Lambda.Arn
+    Export:
+      Name: !Sub "${FunctionName}-arn"
+  LambdaName:
+    Value: !Ref FunctionName
+    Export:
+      Name: !Sub "${FunctionName}-name"

@@ -1,0 +1,11 @@
+{
+  "Parameters": {
+    "FunctionName": "cfn-lmd-watanabe",
+    "Description": "cfn-lmd-watanabe",
+    "Handler": "index.lambda_handler",
+    "MemorySize": "128",
+    "Runtime": "python3.13",
+    "Timeout": "10",
+    "TagsName": "name"
+  }
+}
